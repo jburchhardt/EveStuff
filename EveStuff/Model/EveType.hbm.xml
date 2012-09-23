@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="EveStuff"
+                   namespace="EveStuff.Model">
+
+	<class name="EveType" table="dbo.invTypes" where="published=1">
+		
+		<id name="TypeID" column="typeID">
+			<generator class="assigned" />
+		</id>
+		<property name="Name" column="typeName"/>
+		<property name="Price" column="basePrice"/>
+		<property name="GroupID" column="groupID"/>
+		<property name="Group" column="groupName"/>
+		<property name="CategoryID" column="marketGroupID"/>
+		<property name="RaceID" column="raceID"/> 
+		<many-to-one name="Parent" column="parentID"/>
+		<bag name="Ingredients" table="invTypeMaterials" lazy="true">
+			<key column="typeID"/>
+			<composite-element class="Ingredient">
+				<property name="Quantity" column="quantity"/>
+				<many-to-one name="Component" column="materialTypeID"/>
+			</composite-element>
+		</bag>
+		<one-to-one name="Blueprint" property-ref="Product"/>
+	</class>
+
+	<class name="Blueprint" table="dbo.invBlueprintTypes" where="published=1">
+		<id name="BlueprintID" column="blueprintTypeID">
+			<generator class="assigned" />
+		</id>
+		<many-to-one name="Product" column="productTypeID"/>
+		<bag name="ProductionIngredients" table="RamTypeRequirements" lazy="true" where="activity=1 and damagePerJob>0">
+			<key column="typeID"/>
+			<composite-element class="ProductionIngredient">
+				<property name="Quantity" column="quantity"/>
+				<many-to-one name="Component" column="requiredTypeID"/>
+			</composite-element>
+		</bag>
+		<bag name="InventionIngredients" table="RamTypeRequirements" lazy="true" where="activity=8 and groupID=333">
+			<key column="typeID"/>
+			<composite-element class="InventionIngredient">
+				<property name="Quantity" column="quantity"/>
+				<many-to-one name="Component" column="requiredTypeID"/>
+			</composite-element>
+		</bag>
+	</class>
+	
+	
+	
+
+</hibernate-mapping>
